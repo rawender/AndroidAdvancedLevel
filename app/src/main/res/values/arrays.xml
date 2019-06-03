@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cities">
+        <item>Moscow</item>
+        <item>St. Petersburg</item>
+        <item>Yekaterinburg</item>
+        <item>Novosibirsk</item>
+        <item>Samara</item>
+    </string-array>
+
+    <integer-array name="weather_imgs">
+        <item>@drawable/clear</item>
+        <item>@drawable/cloudy</item>
+        <item>@drawable/sum_rain</item>
+        <item>@drawable/rain</item>
+        <item>@drawable/clear</item>
+    </integer-array>
+    
+    <string-array name="temp">
+        <item>+22</item>
+        <item>+17</item>
+        <item>+20</item>
+        <item>+14</item>
+        <item>+25</item>
+    </string-array>
+    
+    <string-array name="air_humidity">
+        <item>41%</item>
+        <item>68%</item>
+        <item>55%</item>
+        <item>73%</item>
+        <item>39%</item>
+    </string-array>
+    
+    <string-array name="wind_speed">
+        <item>8.6 km/h</item>
+        <item>11.7 km/h</item>
+        <item>7.8 km/h</item>
+        <item>12.9 km/h</item>
+        <item>6.5 km/h</item>
+    </string-array>
+
+    <string-array name="pressure">
+        <item>1005.0 mbar</item>
+        <item>1090.0 mbar</item>
+        <item>950.0 mbar</item>
+        <item>1110.0 mbar</item>
+        <item>920.0 mbar</item>
+    </string-array>
+
+    <string-array name="cities_id">
+        <item>Moscow_id</item>
+        <item>St_Petersburg_id</item>
+        <item>Yekaterinburg_id</item>
+        <item>Novosibirsk_id</item>
+        <item>Samara_id</item>
+    </string-array>
+
+    <string-array name="Moscow_id">
+        <item>Two days ago: +21</item>
+        <item>Yesterday: +20</item>
+        <item>Today: +22</item>
+        <item>Tomorrow: +17</item>
+        <item>Day after tomorrow: +14</item>
+    </string-array>
+
+    <string-array name="St_Petersburg_id">
+        <item>Two days ago: +16</item>
+        <item>Yesterday: +18</item>
+        <item>Today: +17</item>
+        <item>Tomorrow: +19</item>
+        <item>Day after tomorrow: +17</item>
+    </string-array>
+
+    <string-array name="Yekaterinburg_id">
+        <item>Two days ago: +21</item>
+        <item>Yesterday: +19</item>
+        <item>Today: +20</item>
+        <item>Tomorrow: +18</item>
+        <item>Day after tomorrow: +19</item>
+    </string-array>
+
+    <string-array name="Novosibirsk_id">
+        <item>Two days ago: +17</item>
+        <item>Yesterday: +15</item>
+        <item>Today: +14</item>
+        <item>Tomorrow: +18</item>
+        <item>Day after tomorrow: +20</item>
+    </string-array>
+
+    <string-array name="Samara_id">
+        <item>Two days ago: +22</item>
+        <item>Yesterday: +23</item>
+        <item>Today: +25</item>
+        <item>Tomorrow: +26</item>
+        <item>Day after tomorrow: +24</item>
+    </string-array>
+
+</resources>
