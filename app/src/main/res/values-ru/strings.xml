@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="weather_forecast">Прогноз погоды</string>
+    <string name="air_humidity">Влажность</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="pressure">Давление</string>
+    <string name="show_weather_data">Дополнительные опции</string>
+
+    <string name="about_the_developer">О разработчике</string>
+    <string name="feedback" translatable="false">Oбратная связь</string>
+    <string name="options">Опции</string>
+    <string name="history">История</string>
+    <string name="sensors">Датчики</string>
+    <string name="send">Отправить</string>
+    <string name="some_information_about_the_developer">Некоторая информация о разработчике</string>
+    <string name="sensor_readings">Показания датчиков</string>
+    <string name="temperature">Температура</string>
+    <string name="humidity">Влажность</string>
+    <string name="my_city">Мой город</string>
+    <string name="my_city_message">Вы выбрали ваш город</string>
+    <string name="failed_to_update">Не удалось обновить данные</string>
+</resources>

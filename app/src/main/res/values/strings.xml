@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">Weather</string>
+    <string name="app_name" translatable="false">Weather</string>
+    <string name="weather_forecast">Weather forecast</string>
+    <string name="empty" translatable="false">Empty</string>
+    <string name="air_humidity">Air humidity</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="pressure">Pressure</string>
+    <string name="show_weather_data">Additional option</string>
+
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Nickname</string>
+    <string name="nav_header_subtitle" translatable="false">Email</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="action_settings" translatable="false">Settings</string>
+
+    <string name="about_the_developer">About the developer</string>
+    <string name="feedback">Feedback</string>
+    <string name="options">Options</string>
+    <string name="history">History</string>
+    <string name="sensors">Sensors</string>
+    <string name="send">Send</string>
+    <string name="some_information_about_the_developer">Some information about the developer</string>
+    <string name="sensor_readings">Sensor readings</string>
+    <string name="temperature">Temperature</string>
+    <string name="humidity">Humidity</string>
+    <string name="my_city">My city</string>
+    <string name="my_city_message">You have chosen your city</string>
+
+    <string name="place_not_found" translatable="false">Place not found</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="failed_to_update">Failed to update data</string>
 </resources>
