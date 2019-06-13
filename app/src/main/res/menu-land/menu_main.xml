@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="@string/options">
+        <menu>
+            <group android:checkableBehavior="all">
+                <item
+                    android:id="@+id/menu_air_humidity_check"
+                    android:title="@string/air_humidity"
+                    android:checked="true"
+                    app:actionViewClass="android.widget.CheckBox" />
+                <item
+                    android:id="@+id/menu_wind_speed_check"
+                    android:title="@string/wind_speed"
+                    android:checked="true"
+                    app:actionViewClass="android.widget.CheckBox" />
+                <item
+                    android:id="@+id/menu_pressure_check"
+                    android:title="@string/pressure"
+                    android:checked="true"
+                    app:actionViewClass="android.widget.CheckBox" />
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_history"
+        android:title="@string/history" />
+    <item
+        android:id="@+id/menu_sensors"
+        android:title="@string/sensors" />
+    <item
+        android:id="@+id/menu_my_city"
+        android:title="@string/my_city" />
+</menu>

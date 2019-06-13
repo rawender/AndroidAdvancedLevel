@@ -8,4 +8,55 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyAppTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/myColorPrimary</item>
+        <item name="colorPrimaryDark">@color/myColorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+    
+    <style name="medium_text">
+        <item name="android:textSize">@dimen/m_text_size</item>
+        <item name="android:textColor">@color/myColorPrimaryDark</item>
+    </style>
+    
+    <style name="x_large_text" parent="medium_text">
+        <item name="android:textSize">@dimen/xl_text_size</item>
+    </style>
+
+    <style name="title_text" parent="medium_text">
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="large_title" parent="title_text">
+        <item name="android:textSize">@dimen/l_text_size</item>
+        <item name="android:textColor">@color/myColorDark</item>
+    </style>
+
+
+    <style name="checkBoxText" parent="medium_text">
+        <item name="android:textColor">@color/myColorDark</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="button">
+        <item name="android:textSize">@dimen/s_text_size</item>
+        <item name="android:textColor">@color/myColorLight</item>
+        <item name="android:background">@color/myColorPrimaryDark</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MyAppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>
