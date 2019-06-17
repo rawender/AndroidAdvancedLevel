@@ -1,4 +1,4 @@
-package com.geekbrains.weather;
+package com.geekbrains.mymessenger;
 
 import org.junit.Test;
 
