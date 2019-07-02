@@ -1,9 +1,6 @@
 package com.geekbrains.weather.fragments;
 
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,8 +17,6 @@ import android.widget.ListView;
 import com.geekbrains.weather.R;
 import com.geekbrains.weather.support.CitiesFragmentsAdapter;
 
-import java.util.Objects;
-
 import static com.geekbrains.weather.fragments.WeatherFragment.keyForAirHumidity;
 import static com.geekbrains.weather.fragments.WeatherFragment.keyForPressure;
 import static com.geekbrains.weather.fragments.WeatherFragment.keyForWindSpeed;
@@ -31,13 +26,7 @@ public class CitiesFragments extends Fragment {
     public static final String keyForIndex = "index";
 
     private ListView listCities;
-    private int currentPosition = 0;
-
-    private Bundle savedInstanceState = null;
-
-    private boolean airHumidityFlag;
-    private boolean windSpeedFlag;
-    private boolean pressureFlag;
+    private int currentPosition;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,13 +40,30 @@ public class CitiesFragments extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         initViews(view);
-        getFlags(savedInstanceState);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
+    private boolean getHumidity() {
+        boolean humidity = false;
+        if (getArguments() != null) {
+            humidity = getArguments().getBoolean(keyForAirHumidity, false);
+        }
+        return humidity;
+    }
+
+    private boolean getWindSpeed() {
+        boolean windSpeed = false;
+        if (getArguments() != null) {
+            windSpeed = getArguments().getBoolean(keyForWindSpeed, false);
+        }
+        return windSpeed;
+    }
+
+    private boolean getPressure() {
+        boolean pressure = false;
+        if (getArguments() != null) {
+            pressure = getArguments().getBoolean(keyForPressure, false);
+        }
+        return pressure;
     }
 
     @Override
@@ -94,31 +100,15 @@ public class CitiesFragments extends Fragment {
     private void init() {
         FragmentActivity fragmentActivity = getActivity();
         String[] cities = getResources().getStringArray(R.array.cities);
-        final SharedPreferences defaultPrefs =
-                PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity()).getApplicationContext());
 
         if(fragmentActivity != null) {
             CitiesFragmentsAdapter adapter = new CitiesFragmentsAdapter(fragmentActivity,cities);
             listCities.setAdapter(adapter);
             setClickListener(listCities);
-
-            if (savedInstanceState != null) {
-                currentPosition = savedInstanceState.getInt("CurrentCity", 0);
-            } else {
-                currentPosition = getMyCityIndexFromPreference(defaultPrefs);
-            }
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                listCities.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                listCities.setItemChecked(currentPosition, true);
-                showFragment();
-            }
         }
     }
 
     private void showFragment() {
-
-        getFlags(savedInstanceState);
 
         FragmentManager fragmentManager = getFragmentManager();
 
@@ -139,11 +129,11 @@ public class CitiesFragments extends Fragment {
         if(fragmentManager != null){
             Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
             if (fragment != null && !fragment.equals(new WeatherFragment())) {
-                fragment = WeatherFragment.create(currentPosition, airHumidityFlag, windSpeedFlag, pressureFlag);
+                fragment = WeatherFragment.create(currentPosition, getHumidity(), getWindSpeed(), getPressure());
             } else {
                 WeatherFragment weatherFragment = (WeatherFragment) fragmentManager.findFragmentById(R.id.main_container);
                 if (weatherFragment == null || weatherFragment.getIndex() != currentPosition) {
-                    fragment = WeatherFragment.create(currentPosition, airHumidityFlag, windSpeedFlag, pressureFlag);
+                    fragment = WeatherFragment.create(currentPosition, getHumidity(), getWindSpeed(), getPressure());
                 }
             }
             return fragment;
@@ -165,22 +155,5 @@ public class CitiesFragments extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt("CurrentCity", currentPosition);
         super.onSaveInstanceState(outState);
-    }
-
-    private void getFlags (Bundle bundle) {
-        if (bundle != null) {
-            airHumidityFlag = bundle.getBoolean(keyForAirHumidity,
-                    false);
-            windSpeedFlag = bundle.getBoolean(keyForWindSpeed,
-                    false);
-            pressureFlag = bundle.getBoolean(keyForPressure,
-                    false);
-        }
-    }
-
-    private int getMyCityIndexFromPreference(SharedPreferences preferences) {
-        int cityIndex;
-        cityIndex = preferences.getInt(keyForIndex, 0);
-        return cityIndex;
     }
 }

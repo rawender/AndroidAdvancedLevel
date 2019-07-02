@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FragmentManager fragmentManager;
     private int index;
     private Bundle savedInstanceState = null;
-    private int currentPosition = 0;
+    private int currentPosition;
 
     private boolean airHumidityFlag;
     private boolean windSpeedFlag;
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentManager = getSupportFragmentManager();
         getFlags(savedInstanceState);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            showFragment();
             showFragmentTwo();
         } else {
             showFragment();
@@ -120,22 +121,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
         switch (id) {
             case R.id.menu_air_humidity_check:
                 item.setChecked(!item.isChecked());
                 airHumidityFlag = item.isChecked();
-                showWeather(fragment);
+                showWeather();
                 break;
             case R.id.menu_wind_speed_check:
                 item.setChecked(!item.isChecked());
                 windSpeedFlag = item.isChecked();
-                showWeather(fragment);
+                showWeather();
                 break;
             case R.id.menu_pressure_check:
                 item.setChecked(!item.isChecked());
                 pressureFlag = item.isChecked();
-                showWeather(fragment);
+                showWeather();
                 break;
             default:
                 return false;
@@ -143,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    private void showWeather(Fragment fragment) {
+    private void showWeather() {
+        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
         if (fragment != null) {
             fragment = WeatherFragment.create(index, airHumidityFlag, windSpeedFlag, pressureFlag);
             fragmentManager.beginTransaction()
