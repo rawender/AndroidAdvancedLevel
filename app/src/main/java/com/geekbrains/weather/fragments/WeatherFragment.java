@@ -2,11 +2,9 @@ package com.geekbrains.weather.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +20,6 @@ import android.widget.Toast;
 
 import com.geekbrains.weather.database.MyDatabaseHelper;
 import com.geekbrains.weather.database.WeatherTable;
-import com.geekbrains.weather.support.BackgroundService;
 import com.geekbrains.weather.support.GetCurrentIndex;
 import com.geekbrains.weather.R;
 import com.geekbrains.weather.support.OpenWeatherRepo;
@@ -46,6 +43,9 @@ public class WeatherFragment extends Fragment {
     private TextView airHumidity;
     private TextView windSpeed;
     private TextView weatherPressure;
+    private boolean airHumidityFlag;
+    private boolean windSpeedFlag;
+    private boolean pressureFlag;
     private RelativeLayout airHumidityLayout;
     private RelativeLayout windSpeedLayout;
     private RelativeLayout pressureLayout;
@@ -117,6 +117,7 @@ public class WeatherFragment extends Fragment {
         setHasOptionsMenu(true);
         initDB();
         initViews(view);
+        getFlags();
         setAdditionalWeatherData();
         requestRetrofit(getCity());
         currentIndex.getCurrentIndex(getIndex());
@@ -145,17 +146,17 @@ public class WeatherFragment extends Fragment {
     }
 
     private void setAdditionalWeatherData() {
-        if (getHumidity()) {
+        if (airHumidityFlag) {
             airHumidityLayout.setVisibility(View.VISIBLE);
         } else {
             airHumidityLayout.setVisibility(View.GONE);
         }
-        if (getWindSpeed()) {
+        if (windSpeedFlag) {
             windSpeedLayout.setVisibility(View.VISIBLE);
         } else {
             windSpeedLayout.setVisibility(View.GONE);
         }
-        if (getPressure()) {
+        if (pressureFlag) {
             pressureLayout.setVisibility(View.VISIBLE);
         } else {
             pressureLayout.setVisibility(View.GONE);
@@ -164,62 +165,58 @@ public class WeatherFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        FragmentManager fragmentManager = getFragmentManager();
-        switch (id) {
-            case R.id.list_of_cities:
-                if (fragmentManager != null) {
-                    Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                    if (fragment != null) {
-                        fragment = new CitiesFragments();
-                        Bundle args = new Bundle();
-                        args.putBoolean(keyForAirHumidity, getHumidity());
-                        args.putBoolean(keyForWindSpeed, getWindSpeed());
-                        args.putBoolean(keyForPressure, getPressure());
-                        fragment.setArguments(args);
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_container, fragment)
-                                .commit();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            FragmentManager fragmentManager = getFragmentManager();
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.menu_air_humidity_check:
+                    item.setChecked(!item.isChecked());
+                    airHumidityFlag = item.isChecked();
+                    showWeather(fragmentManager);
+                    break;
+                case R.id.menu_wind_speed_check:
+                    item.setChecked(!item.isChecked());
+                    windSpeedFlag = item.isChecked();
+                    showWeather(fragmentManager);
+                    break;
+                case R.id.menu_pressure_check:
+                    item.setChecked(!item.isChecked());
+                    pressureFlag = item.isChecked();
+                    showWeather(fragmentManager);
+                    break;
+                case R.id.list_of_cities:
+                    if (fragmentManager != null) {
+                        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
+                        if (fragment != null) {
+                            fragment = new CitiesFragments();
+                            Bundle args = new Bundle();
+                            args.putBoolean(keyForAirHumidity, getHumidity());
+                            args.putBoolean(keyForWindSpeed, getWindSpeed());
+                            args.putBoolean(keyForPressure, getPressure());
+                            fragment.setArguments(args);
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.main_container, fragment)
+                                    .commit();
+                        }
                     }
-                }
-                break;
-            case R.id.menu_history:
-                Intent intent = new Intent(Objects.requireNonNull(getActivity()).getApplicationContext(),
-                        BackgroundService.class);
-                intent.putExtra(keyForIndex, getIndex());
-                getActivity().startService(intent);
-                break;
-            case R.id.menu_sensors:
-                if (fragmentManager != null) {
-                    Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                    if (fragment != null) {
-                        fragment = new SensorsFragment();
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.main_container, fragment)
-                                .addToBackStack("Some_Key")
-                                .commit();
-                    }
-                }
-                break;
-            case R.id.menu_my_city:
-                final SharedPreferences defaultPrefs =
-                        PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity()).getApplicationContext());
-                saveToPreference(defaultPrefs);
-                Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(),
-                        getString(R.string.my_city_message),
-                        Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                return false;
+                    break;
+                default:
+                    return false;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveToPreference(SharedPreferences preferences) {
-        SharedPreferences.Editor editor = preferences.edit();
-        int cityIndex = getIndex();
-        editor.putInt(keyForIndex, cityIndex);
-        editor.apply();
+    private void showWeather(FragmentManager fragmentManager) {
+        if (fragmentManager != null) {
+            Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
+            if (fragment != null) {
+                fragment = WeatherFragment.create(getIndex(), airHumidityFlag, windSpeedFlag, pressureFlag);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .commit();
+            }
+        }
     }
 
     private void setCityName(String city) {
@@ -292,6 +289,14 @@ public class WeatherFragment extends Fragment {
         MenuItem pressure = menu.findItem(R.id.menu_pressure_check);
         pressure.setChecked(getPressure());
         super.onPrepareOptionsMenu(menu);
+    }
+
+    private void getFlags () {
+        if (getArguments() != null) {
+            airHumidityFlag = getArguments().getBoolean(keyForAirHumidity, false);
+            windSpeedFlag = getArguments().getBoolean(keyForWindSpeed, false);
+            pressureFlag = getArguments().getBoolean(keyForPressure, false);
+        }
     }
 }
 

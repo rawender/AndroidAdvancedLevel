@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.geekbrains.weather.fragments.AboutDeveloperFragment;
 import com.geekbrains.weather.fragments.CitiesFragments;
 import com.geekbrains.weather.fragments.FeedbackFragment;
+import com.geekbrains.weather.fragments.SensorsFragment;
 import com.geekbrains.weather.fragments.WeatherFragment;
 import com.geekbrains.weather.fragments.WeatherHistoryFragment;
 import com.geekbrains.weather.support.BackgroundService;
@@ -122,35 +123,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.menu_air_humidity_check:
-                item.setChecked(!item.isChecked());
-                airHumidityFlag = item.isChecked();
-                showWeather();
+            case R.id.menu_history:
+                Intent intent = new Intent(getApplicationContext(),
+                        BackgroundService.class);
+                intent.putExtra(keyForIndex, index);
+                startService(intent);
                 break;
-            case R.id.menu_wind_speed_check:
-                item.setChecked(!item.isChecked());
-                windSpeedFlag = item.isChecked();
-                showWeather();
+            case R.id.menu_sensors:
+                if (fragmentManager != null) {
+                    Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
+                    if (fragment != null) {
+                        fragment = new SensorsFragment();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.main_container, fragment)
+                                .addToBackStack("Some_Key")
+                                .commit();
+                    }
+                }
                 break;
-            case R.id.menu_pressure_check:
-                item.setChecked(!item.isChecked());
-                pressureFlag = item.isChecked();
-                showWeather();
+            case R.id.menu_my_city:
+                final SharedPreferences defaultPrefs =
+                        PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                saveToPreference(defaultPrefs);
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.my_city_message),
+                        Toast.LENGTH_SHORT).show();
                 break;
             default:
-                return false;
+            return false;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void showWeather() {
-        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-        if (fragment != null) {
-            fragment = WeatherFragment.create(index, airHumidityFlag, windSpeedFlag, pressureFlag);
-            fragmentManager.beginTransaction()
-                    .replace(R.id.main_container, fragment)
-                    .commit();
-        }
     }
 
     @Override
@@ -286,5 +288,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int cityIndex;
         cityIndex = preferences.getInt(keyForIndex, 0);
         return cityIndex;
+    }
+
+    private void saveToPreference(SharedPreferences preferences) {
+        SharedPreferences.Editor editor = preferences.edit();
+        int cityIndex = index;
+        editor.putInt(keyForIndex, cityIndex);
+        editor.apply();
     }
 }

@@ -1,5 +1,6 @@
 package com.geekbrains.weather.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,10 @@ public class CitiesFragments extends Fragment {
     private ListView listCities;
     private int currentPosition;
 
+    private boolean airHumidityFlag;
+    private boolean windSpeedFlag;
+    private boolean pressureFlag;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
@@ -40,49 +45,32 @@ public class CitiesFragments extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         initViews(view);
-    }
-
-    private boolean getHumidity() {
-        boolean humidity = false;
-        if (getArguments() != null) {
-            humidity = getArguments().getBoolean(keyForAirHumidity, false);
-        }
-        return humidity;
-    }
-
-    private boolean getWindSpeed() {
-        boolean windSpeed = false;
-        if (getArguments() != null) {
-            windSpeed = getArguments().getBoolean(keyForWindSpeed, false);
-        }
-        return windSpeed;
-    }
-
-    private boolean getPressure() {
-        boolean pressure = false;
-        if (getArguments() != null) {
-            pressure = getArguments().getBoolean(keyForPressure, false);
-        }
-        return pressure;
+        getFlags();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_sensors) {
-            FragmentManager fragmentManager = getFragmentManager();
-            if (fragmentManager != null) {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                if (fragment != null) {
-                    fragment = new SensorsFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_container, fragment)
-                            .addToBackStack("Some_Key")
-                            .commit();
-                }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.menu_air_humidity_check:
+                    item.setChecked(!item.isChecked());
+                    airHumidityFlag = item.isChecked();
+                    showFragment();
+                    break;
+                case R.id.menu_wind_speed_check:
+                    item.setChecked(!item.isChecked());
+                    windSpeedFlag = item.isChecked();
+                    showFragment();
+                    break;
+                case R.id.menu_pressure_check:
+                    item.setChecked(!item.isChecked());
+                    pressureFlag = item.isChecked();
+                    showFragment();
+                    break;
+                default:
+                    return false;
             }
-        } else {
-            return false;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -129,11 +117,11 @@ public class CitiesFragments extends Fragment {
         if(fragmentManager != null){
             Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
             if (fragment != null && !fragment.equals(new WeatherFragment())) {
-                fragment = WeatherFragment.create(currentPosition, getHumidity(), getWindSpeed(), getPressure());
+                fragment = WeatherFragment.create(currentPosition, airHumidityFlag, windSpeedFlag, pressureFlag);
             } else {
                 WeatherFragment weatherFragment = (WeatherFragment) fragmentManager.findFragmentById(R.id.main_container);
                 if (weatherFragment == null || weatherFragment.getIndex() != currentPosition) {
-                    fragment = WeatherFragment.create(currentPosition, getHumidity(), getWindSpeed(), getPressure());
+                    fragment = WeatherFragment.create(currentPosition, airHumidityFlag, windSpeedFlag, pressureFlag);
                 }
             }
             return fragment;
@@ -155,5 +143,13 @@ public class CitiesFragments extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt("CurrentCity", currentPosition);
         super.onSaveInstanceState(outState);
+    }
+
+    private void getFlags () {
+        if (getArguments() != null) {
+            airHumidityFlag = getArguments().getBoolean(keyForAirHumidity, false);
+            windSpeedFlag = getArguments().getBoolean(keyForWindSpeed, false);
+            pressureFlag = getArguments().getBoolean(keyForPressure, false);
+        }
     }
 }
