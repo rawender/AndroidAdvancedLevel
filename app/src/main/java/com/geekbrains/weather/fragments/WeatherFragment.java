@@ -121,6 +121,37 @@ public class WeatherFragment extends Fragment {
         setAdditionalWeatherData();
         requestRetrofit(getCity());
         currentIndex.getCurrentIndex(getIndex());
+        showCitiesList();
+    }
+
+    private void showCitiesList() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            FragmentManager fragmentManager = getFragmentManager();
+            if (fragmentManager != null) {
+                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container_two);
+                if (fragment != null) {
+                    fragment = new CitiesFragments();
+                    Bundle args = new Bundle();
+                    args.putBoolean(keyForAirHumidity, getHumidity());
+                    args.putBoolean(keyForWindSpeed, getWindSpeed());
+                    args.putBoolean(keyForPressure, getPressure());
+                    fragment.setArguments(args);
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.main_container_two, fragment)
+                            .commit();
+                } else {
+                    fragment = new CitiesFragments();
+                    Bundle args = new Bundle();
+                    args.putBoolean(keyForAirHumidity, getHumidity());
+                    args.putBoolean(keyForWindSpeed, getWindSpeed());
+                    args.putBoolean(keyForPressure, getPressure());
+                    fragment.setArguments(args);
+                    fragmentManager.beginTransaction()
+                            .add(R.id.main_container_two, fragment)
+                            .commit();
+                }
+            }
+        }
     }
 
     private void initViews(View view) {
@@ -166,25 +197,25 @@ public class WeatherFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            FragmentManager fragmentManager = getFragmentManager();
             int id = item.getItemId();
             switch (id) {
                 case R.id.menu_air_humidity_check:
                     item.setChecked(!item.isChecked());
                     airHumidityFlag = item.isChecked();
-                    showWeather(fragmentManager);
+                    showWeather();
                     break;
                 case R.id.menu_wind_speed_check:
                     item.setChecked(!item.isChecked());
                     windSpeedFlag = item.isChecked();
-                    showWeather(fragmentManager);
+                    showWeather();
                     break;
                 case R.id.menu_pressure_check:
                     item.setChecked(!item.isChecked());
                     pressureFlag = item.isChecked();
-                    showWeather(fragmentManager);
+                    showWeather();
                     break;
                 case R.id.list_of_cities:
+                    FragmentManager fragmentManager = getFragmentManager();
                     if (fragmentManager != null) {
                         Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
                         if (fragment != null) {
@@ -207,7 +238,8 @@ public class WeatherFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showWeather(FragmentManager fragmentManager) {
+    private void showWeather() {
+        FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager != null) {
             Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
             if (fragment != null) {

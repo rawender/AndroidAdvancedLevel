@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.geekbrains.weather.fragments.AboutDeveloperFragment;
-import com.geekbrains.weather.fragments.CitiesFragments;
 import com.geekbrains.weather.fragments.FeedbackFragment;
 import com.geekbrains.weather.fragments.SensorsFragment;
 import com.geekbrains.weather.fragments.WeatherFragment;
@@ -62,12 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initSideMenu(toolbar);
         fragmentManager = getSupportFragmentManager();
         getFlags(savedInstanceState);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            showFragment();
-            showFragmentTwo();
-        } else {
-            showFragment();
-        }
+        showFragment();
     }
 
     private void showFragment() {
@@ -83,20 +77,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragment = WeatherFragment.create(currentPosition, airHumidityFlag, windSpeedFlag, pressureFlag);
             fragmentManager.beginTransaction()
                     .add(R.id.main_container, fragment)
-                    .commit();
-        }
-    }
-    private void showFragmentTwo() {
-        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container_two);
-        if (fragment == null) {
-            fragment = new CitiesFragments();
-            Bundle args = new Bundle();
-            args.putBoolean(keyForAirHumidity, airHumidityFlag);
-            args.putBoolean(keyForWindSpeed, windSpeedFlag);
-            args.putBoolean(keyForPressure, pressureFlag);
-            fragment.setArguments(args);
-            fragmentManager.beginTransaction()
-                    .add(R.id.main_container_two, fragment)
                     .commit();
         }
     }
