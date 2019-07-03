@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ public class SensorsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
         initViews(view);
         getSensors();
     }
@@ -90,4 +93,31 @@ public class SensorsFragment extends Fragment {
             showLightSensors(event, textHumidity);
         }
     };
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem options = menu.findItem(R.id.options);
+        MenuItem history = menu.findItem(R.id.menu_history);
+        MenuItem myCity = menu.findItem(R.id.menu_my_city);
+        MenuItem sensors = menu.findItem(R.id.menu_sensors);
+        if (this.isVisible()) {
+            if (options != null) {
+                options.setVisible(false);
+            }
+            if (history != null) {
+                history.setVisible(false);
+            }
+            if (myCity != null) {
+                myCity.setVisible(false);
+            }
+            if (sensors != null) {
+                sensors.setVisible(false);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

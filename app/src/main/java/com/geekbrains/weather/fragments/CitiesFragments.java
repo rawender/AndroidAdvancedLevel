@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -150,6 +151,30 @@ public class CitiesFragments extends Fragment {
             airHumidityFlag = getArguments().getBoolean(keyForAirHumidity, false);
             windSpeedFlag = getArguments().getBoolean(keyForWindSpeed, false);
             pressureFlag = getArguments().getBoolean(keyForPressure, false);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            if (this.isVisible()) {
+                MenuItem options = menu.findItem(R.id.options);
+                if (options != null) {
+                    options.setVisible(false);
+                }
+                MenuItem listCities = menu.findItem(R.id.menu_list_of_cities);
+                if (listCities != null) {
+                    listCities.setVisible(false);
+                }
+                MenuItem history = menu.findItem(R.id.menu_history);
+                if (history != null) {
+                    history.setVisible(false);
+                }
+                MenuItem myCity = menu.findItem(R.id.menu_my_city);
+                if (myCity != null) {
+                    myCity.setVisible(false);
+                }
+            }
         }
     }
 }

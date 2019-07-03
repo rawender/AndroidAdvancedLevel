@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ public class WeatherHistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
         setTempHistory();
         initView(view);
         setCityName();
@@ -61,6 +64,24 @@ public class WeatherHistoryFragment extends Fragment {
     private void setTempHistory() {
         if (getArguments() != null) {
             tempHistory = getArguments().getStringArray(keyForCityTempHistory);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem myCity = menu.findItem(R.id.menu_my_city);
+        MenuItem history = menu.findItem(R.id.menu_history);
+        MenuItem options = menu.findItem(R.id.options);
+        if (this.isVisible()) {
+            if (options != null) {
+                options.setVisible(false);
+            }
+            if (history != null) {
+                history.setVisible(false);
+            }
+            if (myCity != null) {
+                myCity.setVisible(false);
+            }
         }
     }
 }

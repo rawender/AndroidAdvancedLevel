@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -22,12 +21,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.geekbrains.weather.fragments.AboutDeveloperFragment;
+import com.geekbrains.weather.fragments.CitiesFragments;
 import com.geekbrains.weather.fragments.FeedbackFragment;
 import com.geekbrains.weather.fragments.SensorsFragment;
 import com.geekbrains.weather.fragments.WeatherFragment;
 import com.geekbrains.weather.fragments.WeatherHistoryFragment;
 import com.geekbrains.weather.support.BackgroundService;
-import com.geekbrains.weather.support.GetCurrentIndex;
+import com.geekbrains.weather.support.GetOptionsData;
 
 import static com.geekbrains.weather.fragments.CitiesFragments.keyForIndex;
 import static com.geekbrains.weather.fragments.WeatherFragment.keyForAirHumidity;
@@ -36,20 +36,24 @@ import static com.geekbrains.weather.fragments.WeatherFragment.keyForWindSpeed;
 import static com.geekbrains.weather.fragments.WeatherHistoryFragment.keyForCityName;
 import static com.geekbrains.weather.fragments.WeatherHistoryFragment.keyForCityTempHistory;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GetCurrentIndex {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GetOptionsData {
 
     private ServiceFinishedReceiver receiver = new ServiceFinishedReceiver();
 
     private FragmentManager fragmentManager;
     private int index;
     private Bundle savedInstanceState = null;
-    private int currentPosition;
 
     private boolean airHumidityFlag;
     private boolean windSpeedFlag;
     private boolean pressureFlag;
 
+    private boolean currentAirHumidityFlag;
+    private boolean currentWindSpeedFlag;
+    private boolean currentPressureFlag;
+
     private Menu menu;
+    private int currentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -116,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         fragment = new SensorsFragment();
                         fragmentManager.beginTransaction()
                                 .replace(R.id.main_container, fragment)
-                                .addToBackStack("Some_Key")
                                 .commit();
                     }
                 }
@@ -129,6 +132,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         getString(R.string.my_city_message),
                         Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.menu_list_of_cities:
+                if (fragmentManager != null) {
+                    Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
+                    if (fragment != null) {
+                        fragment = new CitiesFragments();
+                        Bundle args = new Bundle();
+                        args.putBoolean(keyForAirHumidity, airHumidityFlag);
+                        args.putBoolean(keyForWindSpeed, windSpeedFlag);
+                        args.putBoolean(keyForPressure, pressureFlag);
+                        fragment.setArguments(args);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.main_container, fragment)
+                                .commit();
+                    }
+                }
+                break;
             default:
             return false;
         }
@@ -137,50 +156,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
         int id = menuItem.getItemId();
         if (id == R.id.nav_about) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                if (fragment != null) {
-                    fragment = new AboutDeveloperFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_container, fragment)
-                            .commit();
-                }
-            } else {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                if (fragment != null) {
-                    fragment = new AboutDeveloperFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_container, fragment)
-                            .addToBackStack("Some_Key")
-                            .commit();
-                }
+            if (fragment != null) {
+                fragment = new AboutDeveloperFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .commit();
             }
-
         } else if (id == R.id.nav_feedback) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                if (fragment != null) {
-                    fragment = new FeedbackFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_container, fragment)
-                            .commit();
-                }
-            } else {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                if (fragment != null) {
-                    fragment = new FeedbackFragment();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.main_container, fragment)
-                            .addToBackStack("Some_Key")
-                            .commit();
-                }
+            if (fragment != null) {
+                fragment = new FeedbackFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_container, fragment)
+                        .commit();
             }
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout_main);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void getCurrentIndex(int index, boolean airHumidityFlag, boolean windSpeedFlag, boolean pressureFlag) {
+        this.index = index;
+        this.currentAirHumidityFlag = airHumidityFlag;
+        this.currentWindSpeedFlag = windSpeedFlag;
+        this.currentPressureFlag = pressureFlag;
     }
 
     private class ServiceFinishedReceiver extends BroadcastReceiver {
@@ -193,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String cityName = intent.getStringExtra(keyForCityName);
                     String[] tempHistory = intent.getStringArrayExtra(keyForCityTempHistory);
                     Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
-                    if (fragment != null && !fragment.equals(new WeatherHistoryFragment())) {
+                    if (fragment != null) {
                         fragment = new WeatherHistoryFragment();
                         Bundle args = new Bundle();
                         args.putString(keyForCityName, cityName);
@@ -201,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         fragment.setArguments(args);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.main_container, fragment)
-                                .addToBackStack("Some_Key")
                                 .commit();
                     }
                     Toast.makeText(getApplicationContext(), "From IntentService",
@@ -221,20 +223,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStop() {
         super.onStop();
         unregisterReceiver(receiver);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        int countOfFragmentInManager = getSupportFragmentManager().getBackStackEntryCount();
-        if(countOfFragmentInManager > 0) {
-            getSupportFragmentManager().popBackStack("Some_Key", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
-    }
-
-    @Override
-    public void getCurrentIndex(int index) {
-        this.index = index;
     }
 
     @Override
@@ -275,5 +263,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int cityIndex = index;
         editor.putInt(keyForIndex, cityIndex);
         editor.apply();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem airHumidity = menu.findItem(R.id.menu_air_humidity_check);
+        airHumidity.setChecked(currentAirHumidityFlag);
+        MenuItem windSpeed = menu.findItem(R.id.menu_wind_speed_check);
+        windSpeed.setChecked(currentWindSpeedFlag);
+        MenuItem pressure = menu.findItem(R.id.menu_pressure_check);
+        pressure.setChecked(currentPressureFlag);
+        return true;
     }
 }

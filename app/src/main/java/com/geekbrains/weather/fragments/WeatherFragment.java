@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.geekbrains.weather.database.MyDatabaseHelper;
 import com.geekbrains.weather.database.WeatherTable;
-import com.geekbrains.weather.support.GetCurrentIndex;
+import com.geekbrains.weather.support.GetOptionsData;
 import com.geekbrains.weather.R;
 import com.geekbrains.weather.support.OpenWeatherRepo;
 import com.geekbrains.weather.support.entites.WeatherRequestRestModel;
@@ -49,7 +49,7 @@ public class WeatherFragment extends Fragment {
     private RelativeLayout airHumidityLayout;
     private RelativeLayout windSpeedLayout;
     private RelativeLayout pressureLayout;
-    private GetCurrentIndex currentIndex;
+    private GetOptionsData currentOptionsData;
 
     WeatherRequestRestModel model = new WeatherRequestRestModel();
 
@@ -102,7 +102,7 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        currentIndex = (GetCurrentIndex) context;
+        currentOptionsData = (GetOptionsData) context;
     }
 
     @Override
@@ -120,7 +120,10 @@ public class WeatherFragment extends Fragment {
         getFlags();
         setAdditionalWeatherData();
         requestRetrofit(getCity());
-        currentIndex.getCurrentIndex(getIndex());
+        currentOptionsData.getCurrentIndex(getIndex(),
+                airHumidityFlag,
+                windSpeedFlag,
+                pressureFlag);
         showCitiesList();
     }
 
@@ -214,7 +217,7 @@ public class WeatherFragment extends Fragment {
                     pressureFlag = item.isChecked();
                     showWeather();
                     break;
-                case R.id.list_of_cities:
+                case R.id.menu_list_of_cities:
                     FragmentManager fragmentManager = getFragmentManager();
                     if (fragmentManager != null) {
                         Fragment fragment = fragmentManager.findFragmentById(R.id.main_container);
@@ -314,13 +317,28 @@ public class WeatherFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem airHumidity = menu.findItem(R.id.menu_air_humidity_check);
-        airHumidity.setChecked(getHumidity());
-        MenuItem windSpeed = menu.findItem(R.id.menu_wind_speed_check);
-        windSpeed.setChecked(getWindSpeed());
-        MenuItem pressure = menu.findItem(R.id.menu_pressure_check);
-        pressure.setChecked(getPressure());
-        super.onPrepareOptionsMenu(menu);
+        if (this.isVisible()) {
+            MenuItem options = menu.findItem(R.id.options);
+            if (options != null) {
+                options.setVisible(true);
+            }
+            MenuItem listCities = menu.findItem(R.id.menu_list_of_cities);
+            if (listCities != null) {
+                listCities.setVisible(true);
+            }
+            MenuItem history = menu.findItem(R.id.menu_history);
+            if (history != null) {
+                history.setVisible(true);
+            }
+            MenuItem myCity = menu.findItem(R.id.menu_my_city);
+            if (myCity != null) {
+                myCity.setVisible(true);
+            }
+            MenuItem sensors = menu.findItem(R.id.menu_sensors);
+            if (sensors != null) {
+                sensors.setVisible(true);
+            }
+        }
     }
 
     private void getFlags () {
